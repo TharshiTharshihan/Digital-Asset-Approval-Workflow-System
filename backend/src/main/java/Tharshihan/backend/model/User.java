@@ -33,6 +33,11 @@ public class User {
         this.role = role;
     }
 
+    public User() {
+
+    }
+
+
     // getters & setters
 
     public Long getId() {
