@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {
-  Ticket,
+  FolderKanban,
   User,
   Mail,
   Lock,
@@ -107,9 +107,9 @@ const handleSubmit = async (e) => {
         <div className="bg-linear-to-br from-orange-500 to-amber-500 p-10 text-white flex flex-col justify-between">
           <div className="flex items-center gap-3 mb-10">
             <div className="grid h-12 w-12 place-content-center rounded-2xl bg-white/15 backdrop-blur">
-              <Ticket className="w-6 h-6" />
+              <FolderKanban className="w-6 h-6" />
             </div>
-            <h2 className="text-3xl font-bold">TicketHub</h2>
+            <h2 className="text-3xl font-bold">AssetFlow</h2>
           </div>
 
           <div className="max-w-xl">
@@ -118,7 +118,7 @@ const handleSubmit = async (e) => {
             </h1>
 
             <p className="text-orange-50/90 text-lg max-w-lg">
-              Join a clean, organized ticketing workspace built for customers,
+              Join a clean, organized file workspace built for customers,
               agents, and fast issue tracking.
             </p>
           </div>
@@ -128,7 +128,7 @@ const handleSubmit = async (e) => {
               <CheckCircle className="w-6 h-6 mb-3" />
               <h3 className="font-semibold text-lg">Structured requests</h3>
               <p className="mt-2 text-sm text-orange-50/90">
-                Capture every ticket with clear ownership and status.
+                Capture every document with clear ownership and status.
               </p>
             </div>
 
@@ -147,7 +147,7 @@ const handleSubmit = async (e) => {
           <h1 className="text-4xl font-bold text-slate-800">Create Account</h1>
 
           <p className="text-slate-500 mt-2">
-            Start booking tickets in minutes
+            Start managing files in minutes
           </p>
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-4">

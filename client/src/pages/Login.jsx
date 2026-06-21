@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Ticket, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { FolderKanban, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -79,12 +79,12 @@ export default function Login() {
 
           <div className="absolute inset-0 bg-linear-to-br from-orange-800/88 via-orange-500/70 to-amber-500/65 flex flex-col justify-between p-10">
             <div className="inline-flex w-fit rounded-full border border-white/20 bg-white/15 px-4 py-2 text-sm font-medium text-white backdrop-blur">
-              Ticket management workspace
+               AssetFlow management workspace
             </div>
 
             <div className="max-w-lg">
               <h1 className="text-5xl font-bold leading-tight text-white">
-                Manage every ticket with clarity.
+                Manage every files with clarity.
               </h1>
 
               <p className="mt-4 text-lg text-orange-50">
@@ -116,16 +116,16 @@ export default function Login() {
         <div className="flex flex-col justify-center bg-white p-8 lg:p-14">
           <div className="flex items-center gap-3 mb-8">
             <div className="grid h-12 w-12 place-content-center rounded-2xl bg-linear-to-br from-orange-500 to-amber-500 shadow-lg shadow-orange-500/20">
-              <Ticket className="text-white w-6 h-6" />
+              <FolderKanban className="text-white w-6 h-6" />
             </div>
 
-            <h2 className="text-2xl font-bold text-slate-800">TicketHub</h2>
+            <h2 className="text-2xl font-bold text-slate-800"> AssetFlow</h2>
           </div>
 
           <h1 className="text-4xl font-bold text-slate-800">Welcome back</h1>
 
           <p className="text-slate-500 mt-2">
-            Sign in to continue managing tickets and support workflows.
+            Sign in to continue managing Files and support workflows.
           </p>
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-5">
