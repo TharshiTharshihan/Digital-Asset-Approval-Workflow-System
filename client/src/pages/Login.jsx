@@ -2,14 +2,17 @@ import { useState } from "react";
 import { FolderKanban, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { loggedIn } from "../redux/userSlice";
+import { useDispatch } from "react-redux";
+
 
 export default function Login() {
-
+  
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
-
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -52,12 +55,17 @@ export default function Login() {
 
       localStorage.setItem("role", data.role);
 
-      
+      console.log("====================================");
+      console.log("data is: ", data);
+      console.log("====================================");
+
+      dispatch(loggedIn(data));
+
       toast.success("Welcome to TicketHub", { theme: "dark" });
 
       navigate("/dashboard");
-    } catch (err) {
 
+    } catch (err) {
       toast.error(err.message || "Login failed", {
         theme: "dark",
       });
@@ -79,7 +87,7 @@ export default function Login() {
 
           <div className="absolute inset-0 bg-linear-to-br from-orange-800/88 via-orange-500/70 to-amber-500/65 flex flex-col justify-between p-10">
             <div className="inline-flex w-fit rounded-full border border-white/20 bg-white/15 px-4 py-2 text-sm font-medium text-white backdrop-blur">
-               AssetFlow management workspace
+              AssetFlow management workspace
             </div>
 
             <div className="max-w-lg">

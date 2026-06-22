@@ -19,15 +19,16 @@ public class DocumentController {
 
     @PostMapping("/upload")
     public ResponseEntity<Document> uploadDocument(
+            @RequestParam Long userId,
             @RequestParam String title,
-            @RequestParam MultipartFile file,
-            @RequestParam String uploadedBy)
+            @RequestParam MultipartFile file
+            )
             throws IOException {
 
         return ResponseEntity.ok(
                 documentService.uploadDocument(
+                        userId,
                         title,
-                        file,
-                        uploadedBy));
+                        file));
     }
 }

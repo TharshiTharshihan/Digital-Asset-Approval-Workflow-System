@@ -10,18 +10,19 @@ import {
 import Home from "./pages/Home";
 import Register from "./pages/Registration";
 import Login from "./pages/Login";
- import Dashboard from "./pages/Dashboard";
-// import CreateTicket from "./pages/Create";
+import Dashboard from "./pages/Dashboard";
+import FileUpload from "./pages/FileUpload";
 
 import { ToastContainer } from "react-toastify";
-import './App.css'
+import "./App.css";
+import { useSelector } from "react-redux";
+
+const ProtectedRoute = () => {
+    const { currentUser } = useSelector((state) => state.user);
+    return currentUser ? <Outlet /> : <Navigate to="/login" />;
+  };
 
 function App() {
-
-  const ProtectedRoute = () => {
-  const user = true;
-  return user ? <Outlet /> : <Navigate to="/login" />;
-};
 
 
   return (
@@ -37,12 +38,11 @@ function App() {
           <Route path="/" element={<Home />}></Route>
           <Route path="/register" element={<Register />}></Route>
           <Route path="/login" element={<Login />}></Route>
-          {/* <Route path="/create-ticket" element={<CreateTicket />}></Route> */}
-         
+          <Route path="/file-upload" element={<FileUpload />}></Route>
         </Routes>
       </BrowserRouter>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

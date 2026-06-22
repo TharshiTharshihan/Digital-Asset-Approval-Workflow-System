@@ -8,40 +8,21 @@ import {
   Menu,
   X,
 } from "lucide-react";
+import { logout } from "../redux/userSlice";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 import { Link, useNavigate } from "react-router-dom";
 
-
 const Sidebar = () => {
-
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  
+  const dispatch = useDispatch();
+  const { currentUser } = useSelector((state) => state.user);
 
-  const logout = async () => {
-    try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/logout`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-    } catch (error) {
-      console.log(error);
-    } finally {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      setIsOpen(false);
-      navigate("/login");
-    }
-  };
-
- const getUser = () => {
-    const user = localStorage.getItem("user");
-    return user ? JSON.parse(user) : null;
-  };
-
-  const user = getUser();
-
+ 
   const closeSidebar = () => setIsOpen(false);
 
   return (
@@ -74,7 +55,7 @@ const Sidebar = () => {
       >
         {/* Header */}
         <div className="p-6 border-b flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-orange-500">TicketHub</h1>
+          <h1 className="text-3xl font-bold text-orange-500">DocumentHub</h1>
 
           <button onClick={closeSidebar} className="sm:hidden">
             <X size={24} />
@@ -83,7 +64,7 @@ const Sidebar = () => {
 
         {/* Navigation */}
 
-        {user?.role === "admin" ? (
+        {currentUser?.role === "ADMIN" ? (
           <nav className="flex-1 p-4 space-y-3">
             <Link
               to="/dashboard"
@@ -120,7 +101,7 @@ const Sidebar = () => {
               Profile
             </Link>
           </nav>
-        ) : user?.role === "user" ? (
+        ) : currentUser?.role === "EMPLOYEE" ? (
           <nav className="flex-1 p-4 space-y-3">
             <Link
               to="/dashboard"
@@ -132,21 +113,21 @@ const Sidebar = () => {
             </Link>
 
             <Link
-              to="/create-ticket"
+              to="/file-upload"
               onClick={closeSidebar}
               className="flex items-center gap-3 p-3 rounded-xl hover:bg-orange-100"
             >
               <PlusCircle />
-              Create Ticket
+              Upload File
             </Link>
 
             <Link
-              to="/my-tickets"
+              to="/my-files"
               onClick={closeSidebar}
               className="flex items-center gap-3 p-3 rounded-xl hover:bg-orange-100"
             >
               <Ticket />
-              My Tickets
+              My Documents
             </Link>
 
             <Link
@@ -170,12 +151,12 @@ const Sidebar = () => {
             </Link>
 
             <Link
-              to="/assigned-tickets"
+              to="/assigned-files"
               onClick={closeSidebar}
               className="flex items-center gap-3 p-3 rounded-xl hover:bg-orange-100"
             >
               <Ticket />
-              Assigned Tickets
+              Assigned Files
             </Link>
 
             <Link
@@ -191,13 +172,47 @@ const Sidebar = () => {
 
         {/* Logout */}
         <button
-          onClick={logout}
-          className="m-4 bg-orange-500 text-white p-3 rounded-xl flex items-center justify-center gap-2"
+          onClick={() => setShowLogoutModal(true)}
+          className="m-4 bg-orange-500 text-white p-3 rounded-xl flex items-center justify-center gap-2 cursor-pointer"
         >
           <LogOut />
           Logout
         </button>
       </div>
+
+
+      {showLogoutModal && (
+  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div className="bg-white rounded-2xl p-6 w-80 shadow-lg">
+      <h2 className="text-xl font-bold text-gray-800">
+        Confirm Logout
+      </h2>
+
+      <p className="text-gray-500 mt-2">
+        Are you sure you want to logout?
+      </p>
+
+      <div className="flex justify-end gap-3 mt-6">
+        <button
+          onClick={() => setShowLogoutModal(false)}
+          className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300"
+        >
+          Cancel
+        </button>
+
+        <button
+          onClick={() => {
+            dispatch(logout());
+            navigate("/login");
+          }}
+          className="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600"
+        >
+          Logout
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </>
   );
 };

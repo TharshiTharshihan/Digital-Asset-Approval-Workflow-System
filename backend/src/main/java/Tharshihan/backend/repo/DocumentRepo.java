@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface DocumentRepo extends JpaRepository<Document, Long> {
 
-    List<Document> findByStatus(DocumentStatus status);
+    List<Document> findByUploadedById(Long userId);
 
 }

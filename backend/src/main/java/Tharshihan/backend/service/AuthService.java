@@ -51,8 +51,12 @@ public class AuthService {
         }
 
         return new LoginResponse(
-                "Login Successful",
-                user.getRole().name()
+                user.getId(),
+                user.getName(),
+                user.getRole().name(),
+                "Login Successful"
+
+
         );
     }
 }

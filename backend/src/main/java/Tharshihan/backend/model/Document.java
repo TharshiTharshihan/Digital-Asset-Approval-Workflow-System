@@ -18,7 +18,9 @@ public class Document {
     private byte[] fileData;
     @Enumerated(EnumType.STRING)
     private DocumentStatus status;
-    private String uploadedBy;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User uploadedBy;
     private Date uploadedDate;
 
     public Document() {
@@ -26,7 +28,7 @@ public class Document {
     public Document(Long id, String title, String fileName,
                     String fileType, byte[] fileData,
                     DocumentStatus status,
-                    String uploadedBy,
+                    User uploadedBy,
                     Date uploadedDate) {
         this.id = id;
         this.title = title;
@@ -86,11 +88,11 @@ public class Document {
         this.status = status;
     }
 
-    public String getUploadedBy() {
+    public User getUploadedBy() {
         return uploadedBy;
     }
 
-    public void setUploadedBy(String uploadedBy) {
+    public void setUploadedBy(User uploadedBy) {
         this.uploadedBy = uploadedBy;
     }
 

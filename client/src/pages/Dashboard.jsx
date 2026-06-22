@@ -1,6 +1,6 @@
-import {  useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import UserLayout from "../layouts/UserLayout";
-
+import { useSelector } from "react-redux";
 import {
   ResponsiveContainer,
   PieChart,
@@ -30,7 +30,11 @@ const STATUS_COLORS = {
 
 const Dashboard = () => {
   
-const [loading, setLoading] = useState(true);
+  const { currentUser } = useSelector((state) => state.user);
+
+  console.log("currentUser is: ", currentUser);
+
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   const statusCounts = useMemo(() => {
@@ -50,19 +54,22 @@ const [loading, setLoading] = useState(true);
       { name: "Closed", value: 1 },
     ];
   }, []);
-    //    localStorage.setItem("role");
-
+  //    localStorage.setItem("role");
 
   return (
     <UserLayout>
       <div className="space-y-6">
         <div className="bg-linear-to-r from-orange-500 to-orange-600 rounded-3xl p-8 text-white shadow-lg">
           <h1 className="text-4xl font-bold">
-            1
+            {currentUser?.role === "admin"
+              ? "Admin Dashboard"
+              : currentUser?.role === "agent"
+                ? "Agent Dashboard"
+                : "Employee Dashboard"}
           </h1>
           <p className="mt-3 text-orange-100">
-            Welcome back, . Here is your live ticket
-            summary.
+            Welcome back, {currentUser?.name || "User"}. Here is your live
+            ticket summary.
           </p>
         </div>
 
@@ -79,33 +86,27 @@ const [loading, setLoading] = useState(true);
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
               <div className="bg-white rounded-2xl p-6 shadow">
                 <p className="text-slate-500">Total Tickets</p>
-                <h2 className="text-4xl font-bold text-orange-500">
-1                </h2>
+                <h2 className="text-4xl font-bold text-orange-500">1 </h2>
               </div>
 
               <div className="bg-white rounded-2xl p-6 shadow">
                 <p className="text-slate-500">Open</p>
-                <h2 className="text-4xl font-bold text-orange-500">
-1                </h2>
+                <h2 className="text-4xl font-bold text-orange-500">1 </h2>
               </div>
 
               <div className="bg-white rounded-2xl p-6 shadow">
                 <p className="text-slate-500">In Progress</p>
-                <h2 className="text-4xl font-bold text-blue-500">
-1                </h2>
+                <h2 className="text-4xl font-bold text-blue-500">1 </h2>
               </div>
 
               <div className="bg-white rounded-2xl p-6 shadow">
                 <p className="text-slate-500">Resolved</p>
-                <h2 className="text-4xl font-bold text-amber-500">
-1                </h2>
+                <h2 className="text-4xl font-bold text-amber-500">1 </h2>
               </div>
 
               <div className="bg-white rounded-2xl p-6 shadow">
                 <p className="text-slate-500">Closed</p>
-                <h2 className="text-4xl font-bold text-green-500">
-                  1
-                </h2>
+                <h2 className="text-4xl font-bold text-green-500">1</h2>
               </div>
             </div>
 
