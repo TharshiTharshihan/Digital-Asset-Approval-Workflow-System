@@ -22,7 +22,6 @@ const Sidebar = () => {
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
 
- 
   const closeSidebar = () => setIsOpen(false);
 
   return (
@@ -55,7 +54,7 @@ const Sidebar = () => {
       >
         {/* Header */}
         <div className="p-6 border-b flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-orange-500">DocumentHub</h1>
+          <h1 className="text-3xl font-bold text-green-500">Asset Hub</h1>
 
           <button onClick={closeSidebar} className="sm:hidden">
             <X size={24} />
@@ -76,7 +75,7 @@ const Sidebar = () => {
             </Link>
 
             <Link
-              to="/all-tickets"
+              to="/all-files"
               onClick={closeSidebar}
               className="flex items-center gap-3 p-3 rounded-xl hover:bg-orange-100"
             >

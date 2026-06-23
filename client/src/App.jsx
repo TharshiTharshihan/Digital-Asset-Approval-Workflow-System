@@ -12,7 +12,9 @@ import Register from "./pages/Registration";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import FileUpload from "./pages/FileUpload";
-
+import MyFiles from "./pages/MyFiles";
+import AllFiles from "./pages/AllFiles";
+import Profile from "./pages/Profile";
 import { ToastContainer } from "react-toastify";
 import "./App.css";
 import { useSelector } from "react-redux";
@@ -39,6 +41,9 @@ function App() {
           <Route path="/register" element={<Register />}></Route>
           <Route path="/login" element={<Login />}></Route>
           <Route path="/file-upload" element={<FileUpload />}></Route>
+          <Route path="/my-files" element={<MyFiles />}></Route>
+          <Route path="/all-files" element={<AllFiles />}></Route>
+          <Route path="/profile" element={<Profile />}></Route>
         </Routes>
       </BrowserRouter>
     </>

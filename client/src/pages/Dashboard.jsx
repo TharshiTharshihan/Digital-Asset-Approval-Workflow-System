@@ -59,15 +59,15 @@ const Dashboard = () => {
   return (
     <UserLayout>
       <div className="space-y-6">
-        <div className="bg-linear-to-r from-orange-500 to-orange-600 rounded-3xl p-8 text-white shadow-lg">
+        <div className="bg-linear-to-r from-green-500 to-green-600 rounded-3xl p-8 text-white shadow-lg">
           <h1 className="text-4xl font-bold">
-            {currentUser?.role === "admin"
+            {currentUser?.role === "ADMIN"
               ? "Admin Dashboard"
-              : currentUser?.role === "agent"
-                ? "Agent Dashboard"
+              : currentUser?.role === "MANAGER"
+                ? "Manager Dashboard"
                 : "Employee Dashboard"}
           </h1>
-          <p className="mt-3 text-orange-100">
+          <p className="mt-3 text-green-100">
             Welcome back, {currentUser?.name || "User"}. Here is your live
             ticket summary.
           </p>

@@ -12,6 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
+import java.io.IOException;
 
 @Service
 public class DocumentService {
@@ -43,5 +45,18 @@ public class DocumentService {
         document.setStatus(DocumentStatus.PENDING);
 
         return documentRepo.save(document);
+    }
+
+    public List<Document> getAllDocuments() {
+    List<Document> documents = documentRepo.findAll();
+    return documents;
+    }
+
+    public List<Document> myDocuments(Long userId) {
+        return documentRepo.findByUploadedById(userId);
+    }
+
+    public Document getSingleDocument(Long id) {
+        return documentRepo.findById(id).orElseThrow(()-> new RuntimeException("Document is not found for this id: "+ id));
     }
 }
