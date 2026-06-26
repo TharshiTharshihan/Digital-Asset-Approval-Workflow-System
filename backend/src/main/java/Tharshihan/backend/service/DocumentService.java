@@ -57,6 +57,21 @@ public class DocumentService {
     }
 
     public Document getSingleDocument(Long id) {
-        return documentRepo.findById(id).orElseThrow(()-> new RuntimeException("Document is not found for this id: "+ id));
+        return documentRepo.findById(id)
+                .orElseThrow(()-> new RuntimeException("Document is not found for this id: "+ id));
+    }
+
+    public Document updateDocument(Long id, String status, Long managerId) {
+        Document doc = documentRepo.findById(id)
+                .orElseThrow(()->new RuntimeException("Document not found"+id));
+        User manager = userRepo.findById(managerId)
+                .orElseThrow(() -> new RuntimeException("Manager not found" +managerId));
+
+        
+        doc.setStatus(DocumentStatus.valueOf(status.toUpperCase()));
+        doc.setAssignedManager(manager);
+
+        return documentRepo.save(doc);
+
     }
 }

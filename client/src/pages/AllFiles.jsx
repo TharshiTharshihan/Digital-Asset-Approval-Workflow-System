@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { AlertCircle, Clock, Search, User, X } from "lucide-react";
 import UserLayout from "../layouts/UserLayout";
-
-//import { toast } from "react-toastify";
+import { toast } from "react-toastify";
 
 const statusColor = {
   Open: "bg-orange-100 text-orange-600",
@@ -17,46 +16,97 @@ const priorityColor = {
   Low: "text-green-500",
 };
 
-const statusOptions = ["Open", "In Progress", "Resolved", "Closed"];
+const statusOptions = ["PENDING", "APPROVED", "REJECTED", "ARCHIVED"];
 
 export default function AllFiles() {
-
   const [search, setSearch] = useState("");
   const [files, setFiles] = useState([]);
-    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+  const [managers, setManagers] = useState([]);
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
   const [selectedfile, setSelectedfile] = useState(null);
- 
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
- useEffect(() => {
-  const fetchFiles = async () => {
-    try {
+  useEffect(() => {
+    const fetchFiles = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const response = await fetch(`${BACKEND_URL}/api/document/all`);
+
+        const data = await response.json();
+
+        console.log("data is:", data);
+
+        setFiles(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.log(error);
+        setError("Failed to load files");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFiles();
+  }, []);
+
+  useEffect(() => {
+    const fetchedManagers = async () => {
       setLoading(true);
-      setError("");
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/users/managers`);
 
-      const response = await fetch(
-        `${BACKEND_URL}/api/document/all`
+        const managers = await res.json();
+        console.log("managers:", managers);
+
+        setManagers(managers);
+      } catch (error) {
+        console.error("Error fetching managers:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchedManagers();
+  }, []);
+
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedManager, setSelectedManager] = useState("");
+
+  const handleUpdate = async () => {
+    try {
+      const res = await fetch(
+        `${BACKEND_URL}/api/document/file/${selectedfile.id}?status=${selectedStatus}&managerId=${selectedManager}`,
+        {
+          method: "PUT",
+        },
       );
+      if (!res.ok) {
+        const errText = await res.text();
+        console.log("Backend error:", errText);
+        throw new Error("Update failed");
+      }
 
-      const data = await response.json();
-
-      console.log("data is:", data);
-
-      setFiles(Array.isArray(data) ? data : []);
+      console.log(selectedStatus);
+      console.log(selectedManager);
+      toast.success("File updated successfully", { theme: "dark" });
+      setSelectedfile(null);
     } catch (error) {
-      console.log(error);
-      setError("Failed to load files");
-    } finally {
-      setLoading(false);
+      toast.error("Failed to update file", { theme: "dark" });
+      console.error("Error updating file:", error);
     }
   };
+  useEffect(() => {
+    if (selectedfile) {
+      setSelectedStatus(selectedfile.status || "");
+      setSelectedManager(selectedfile.assignedManager?.id || "");
+    }
+  }, [selectedfile]);
 
-  fetchFiles();
-}, []);
-
-   const filteredfiles = files.filter((file) => {
+  const filteredfiles = files.filter((file) => {
     const query = search.toLowerCase();
 
     return (
@@ -71,10 +121,7 @@ export default function AllFiles() {
   const progressCount = files.filter(
     (file) => file.status === "In Progress",
   ).length;
-  const closedCount = files.filter(
-    (file) => file.status === "Closed",
-  ).length;
- 
+  const closedCount = files.filter((file) => file.status === "Closed").length;
 
   return (
     <UserLayout>
@@ -111,20 +158,23 @@ export default function AllFiles() {
         <div className="grid gap-4 md:grid-cols-3">
           <div className="bg-white rounded-2xl p-5 shadow">
             <p className="text-slate-500">Open files</p>
-            <h2 className="text-3xl font-bold text-orange-500">{files.length}</h2>
+            <h2 className="text-3xl font-bold text-orange-500">
+              {files.length}
+            </h2>
           </div>
 
           <div className="bg-white rounded-2xl p-5 shadow">
             <p className="text-slate-500">Pending</p>
             <h2 className="text-3xl font-bold text-blue-500">
-            {files.filter((f) => f.status === "PENDING").length}
+              {files.filter((f) => f.status === "PENDING").length}
             </h2>
           </div>
 
           <div className="bg-white rounded-2xl p-5 shadow">
             <p className="text-slate-500">Closed</p>
-            <h2 className="text-3xl font-bold text-green-500">            {files.filter((f) => f.status === "APPROVED").length}
-</h2>
+            <h2 className="text-3xl font-bold text-green-500">
+              {files.filter((f) => f.status === "APPROVED").length}
+            </h2>
           </div>
         </div>
 
@@ -162,7 +212,11 @@ export default function AllFiles() {
                 <div className="flex justify-between items-start gap-3">
                   <div>
                     <span className="font-bold text-orange-500">
-                      <span className='text-black text-sm font-thin '> id :</span> {file.id}
+                      <span className="text-black text-sm font-thin ">
+                        {" "}
+                        id :
+                      </span>{" "}
+                      {file.id}
                     </span>
                     <h2 className="text-lg font-semibold mt-3 text-gray-800 line-clamp-2">
                       {file.title}
@@ -172,8 +226,7 @@ export default function AllFiles() {
                   <span
                     className={`text-xs px-3 py-1 rounded-full font-medium ${statusColor[file.status] || "bg-slate-100 text-slate-600"}`}
                   >
-                    {file.fileName
-}
+                    {file.fileName}
                   </span>
                 </div>
 
@@ -182,8 +235,7 @@ export default function AllFiles() {
                     {file.fileType}
                   </span>
                   <span className="inline-block bg-orange-50 text-orange-600 px-3 py-1 rounded-full text-xs">
-                    {file.fileName
-}
+                    {file.fileName}
                   </span>
                 </div>
 
@@ -195,24 +247,23 @@ export default function AllFiles() {
 
                   <div className="flex items-center gap-2">
                     <User size={15} />
-                    <span className="truncate">
-                       {file.uploadedBy?.name}
-                    </span>
+                    <span className="truncate">{file.uploadedBy?.name}</span>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <AlertCircle
-                      size={15}
-                      className={
-                        priorityColor[file.priority] || "text-slate-400"
-                      }
-                    />
+                    <AlertCircle size={15} className="text-slate-400" />
                     <span
-                      className={
-                        priorityColor[file.priority] || "text-slate-500"
-                      }
+                      className={`font-semibold ${
+                        file.status === "APPROVED"
+                          ? "text-green-600"
+                          : file.status === "PENDING"
+                            ? "text-yellow-500"
+                            : file.status === "REJECTED"
+                              ? "text-red-600"
+                              : "text-slate-500"
+                      }`}
                     >
-                         {file.status}
+                      {file.status}
                     </span>
                   </div>
                 </div>
@@ -252,7 +303,15 @@ export default function AllFiles() {
                 <div className="rounded-2xl bg-slate-50 p-4">
                   <p className="text-sm text-slate-500">Status</p>
                   <p
-                    className={`mt-1 font-semibold rounded-2xl px-3 py-1 w-fit  ${statusColor[selectedfile.status] || "text-slate-700"}`}
+                    className={`font-semibold ${
+                      selectedfile.status === "APPROVED"
+                        ? "text-green-600"
+                        : selectedfile.status === "PENDING"
+                          ? "text-yellow-500"
+                          : selectedfile.status === "REJECTED"
+                            ? "text-red-600"
+                            : "text-slate-500"
+                    }`}
                   >
                     {selectedfile.status}
                   </p>
@@ -270,15 +329,15 @@ export default function AllFiles() {
                 <div className="rounded-2xl bg-slate-50 p-4">
                   <p className="text-sm text-slate-500">Requester</p>
                   <p className="mt-1 font-semibold text-slate-800">
-                    {selectedfile.userName}
+                    {selectedfile.uploadedBy?.name}
                   </p>
                 </div>
 
                 <div className="rounded-2xl bg-slate-50 p-4">
                   <p className="text-sm text-slate-500">Created On</p>
                   <p className="mt-1 font-semibold text-slate-800">
-                    {selectedfile.createdAt
-                      ? new Date(selectedfile.createdAt).toLocaleString()
+                    {selectedfile.uploadedDate
+                      ? new Date(selectedfile.uploadedDate).toLocaleString()
                       : "Unknown"}
                   </p>
                 </div>
@@ -298,14 +357,12 @@ export default function AllFiles() {
                   </label>
 
                   <select
-                    // value={
-                    //   statusDrafts[selectedfile._id] ?? selectedfile.status
-                    // }
-                    // onChange={(e) =>
-                    //   handleStatusChange(selectedfile._id, e.target.value)
-                    // }
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                    value={selectedStatus}
+                    onChange={(e) => setSelectedStatus(e.target.value)}
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3"
                   >
+                    <option value="">Select Status</option>
+
                     {statusOptions.map((status) => (
                       <option key={status} value={status}>
                         {status}
@@ -320,35 +377,26 @@ export default function AllFiles() {
                   </label>
 
                   <select
-                    // value={
-                    //   assignmentDrafts[selectedfile._id] ??
-                    //   resolveAssignedAgent(selectedfile.assignedTo).id
-                    // }
-                    // onChange={(e) =>
-                    //   handleAssignmentChange(selectedfile._id, e.target.value)
-                    // }
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                    value={selectedManager}
+                    onChange={(e) => setSelectedManager(e.target.value)}
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3"
                   >
-                    <option value="">Select an agent</option>
+                    <option value="">Select Manager</option>
 
-                    {/* {agents.map((agent) => (
-                      <option key={agent._id} value={agent._id}>
-                        {agent.name}
+                    {managers.map((manager) => (
+                      <option key={manager.id} value={manager.id}>
+                        {manager.name}
                       </option>
-                    ))} */}
+                    ))}
                   </select>
                 </div>
 
-                {/* <button
-                  type="button"
-                  // onClick={() => handleUpdatefile(selectedfile)}
-                  disabled={savingfileId === selectedfile._id}
-                  className="w-full bg-orange-500 text-white py-3 rounded-xl hover:bg-orange-600 transition-colors disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+                <button
+                  onClick={handleUpdate}
+                  className="w-full bg-orange-500 text-white py-3 rounded-xl"
                 >
-                  {savingfileId === selectedfile._id
-                    ? "Updating..."
-                    : "Update"}
-                </button> */}
+                  Update
+                </button>
               </div>
             </div>
           </div>
@@ -356,6 +404,4 @@ export default function AllFiles() {
       </div>
     </UserLayout>
   );
-};
-
-
+}

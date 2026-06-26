@@ -50,15 +50,36 @@ public class DocumentController {
 
 
     // view single file
-    @GetMapping("/file/{id}")
-    public ResponseEntity<Document>getSingleDocument(@PathVariable Long id){
-        Document document = documentService.getSingleDocument(id);
+//    @GetMapping("/file/{id}")
+//    public ResponseEntity<Document>getSingleDocument(@PathVariable Long id){
+//        Document document = documentService.getSingleDocument(id);
+//
+//        if(document != null){
+//            return new ResponseEntity<>(document, HttpStatus.OK);
+//        } else
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//    }
 
-        if(document != null){
-            return new ResponseEntity<>(document, HttpStatus.OK);
-        } else
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    //update the document
+    @PutMapping("/file/{id}")
+    public ResponseEntity<String>updateDocument(@PathVariable Long id,
+                                                @RequestParam String status,
+                                                @RequestParam Long managerId){
+
+        Document updatedDocument = null;
+
+        try {
+            updatedDocument = documentService.updateDocument(id,status,managerId);
+
+        } catch (Exception e)
+        {
+            throw new RuntimeException();
+        }
+
+        if(updatedDocument != null){
+            return new ResponseEntity<>("Updated", HttpStatus.OK);
+        }else
+            return new ResponseEntity<>("Faile to update", HttpStatus.BAD_REQUEST);
+
     }
-
-
 }

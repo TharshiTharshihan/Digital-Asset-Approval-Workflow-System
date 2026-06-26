@@ -21,6 +21,10 @@ public class Document {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User uploadedBy;
+
+    @ManyToOne
+    @JoinColumn(name = "manager_id")
+    private User assignedManager;
     private Date uploadedDate;
 
     public Document() {
@@ -28,7 +32,7 @@ public class Document {
     public Document(Long id, String title, String fileName,
                     String fileType, byte[] fileData,
                     DocumentStatus status,
-                    User uploadedBy,
+                    User uploadedBy, User assignedManager,
                     Date uploadedDate) {
         this.id = id;
         this.title = title;
@@ -37,6 +41,7 @@ public class Document {
         this.fileData = fileData;
         this.status = status;
         this.uploadedBy = uploadedBy;
+        this.assignedManager = assignedManager;
         this.uploadedDate = uploadedDate;
     }
 
@@ -50,6 +55,14 @@ public class Document {
 
     public String getTitle() {
         return title;
+    }
+
+    public User getAssignedManager() {
+        return assignedManager;
+    }
+
+    public void setAssignedManager(User assignedManager) {
+        this.assignedManager = assignedManager;
     }
 
     public void setTitle(String title) {
