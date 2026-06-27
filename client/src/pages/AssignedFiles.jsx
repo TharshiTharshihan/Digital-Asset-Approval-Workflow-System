@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { AlertCircle, Clock, Search, User, X } from "lucide-react";
+import { AlertCircle, Clock, Search, Ticket, User, X ,AtSign } from "lucide-react";
 import UserLayout from "../layouts/UserLayout";
-import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
+//import { toast } from "react-toastify";
 
 const statusColor = {
   Open: "bg-orange-100 text-orange-600",
@@ -16,126 +17,55 @@ const priorityColor = {
   Low: "text-green-500",
 };
 
-const statusOptions = ["PENDING", "APPROVED", "REJECTED", "ARCHIVED"];
+const statusOptions = ["Open", "In Progress", "Resolved", "Closed"];
 
-export default function AllFiles() {
+function AssignedFiles () {
+
+
+ const { currentUser } = useSelector(state => state.user);
+
+
   const [search, setSearch] = useState("");
   const [files, setFiles] = useState([]);
-  const [managers, setManagers] = useState([]);
-  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
-
   const [selectedfile, setSelectedfile] = useState(null);
-
+  const [statusDrafts, setStatusDrafts] = useState({});
+  const [commentText, setCommentText] = useState("");
+  const [savingTicketId, setSavingTicketId] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
-  useEffect(() => {
-    const fetchFiles = async () => {
-      try {
-        setLoading(true);
-        setError("");
+ useEffect(() => {
+  if (!currentUser?.userId) return;
 
-        const response = await fetch(`${BACKEND_URL}/api/document/all`);
 
-        const data = await response.json();
+  fetch(`${BACKEND_URL}/api/document/assigned-files/${currentUser.userId}`)
+    .then((res) => res.json())
+    .then((data) => {
+      setFiles(data);
+      setLoading(false);
+      console.log("Assigned files : ", data);
+    })
+    .catch((err) => {
+      setError(err.message);
+      setLoading(false);
+    });
+}, [currentUser?.userId]);
 
-        console.log("data is:", data);
 
-        setFiles(Array.isArray(data) ? data : []);
-      } catch (error) {
-        console.log(error);
-        setError("Failed to load files");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchFiles();
-  }, []);
-
-  useEffect(() => {
-    const fetchedManagers = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch(`${BACKEND_URL}/api/users/managers`);
-
-        const managers = await res.json();
-        console.log("managers:", managers);
-
-        setManagers(managers);
-      } catch (error) {
-        console.error("Error fetching managers:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchedManagers();
-  }, []);
-
-  const [selectedStatus, setSelectedStatus] = useState("");
-  const [selectedManager, setSelectedManager] = useState("");
-
-  const handleUpdate = async () => {
-    try {
-      const res = await fetch(
-        `${BACKEND_URL}/api/document/file/${selectedfile.id}?status=${selectedStatus}&managerId=${selectedManager}`,
-        {
-          method: "PUT",
-        },
-      );
-      if (!res.ok) {
-        const errText = await res.text();
-        console.log("Backend error:", errText);
-        throw new Error("Update failed");
-      }
-
-      console.log(selectedStatus);
-      console.log(selectedManager);
-      toast.success("File updated successfully", { theme: "dark" });
-      setSelectedfile(null);
-    } catch (error) {
-      toast.error("Failed to update file", { theme: "dark" });
-      console.error("Error updating file:", error);
-    }
-  };
-  useEffect(() => {
-    if (selectedfile) {
-      setSelectedStatus(selectedfile.status || "");
-      setSelectedManager(selectedfile.assignedManager?.id || "");
-    }
-  }, [selectedfile]);
-
-  const filteredfiles = files.filter((file) => {
-    const query = search.toLowerCase();
-
-    return (
-      file.fileName?.toLowerCase().includes(query) ||
-      file.fileType?.toLowerCase().includes(query) ||
-      file.category?.toLowerCase().includes(query) ||
-      file.userName?.toLowerCase().includes(query)
-    );
-  });
-
-  const openCount = files.filter((file) => file.status === "Open").length;
-  const progressCount = files.filter(
-    (file) => file.status === "In Progress",
-  ).length;
-  const closedCount = files.filter((file) => file.status === "Closed").length;
 
   return (
     <UserLayout>
       <div className="space-y-6">
-        <div className="bg-linear-to-r from-green-500 to-green-600 rounded-3xl p-8 text-white shadow-lg">
+        <div className="bg-linear-to-r from-orange-500 to-orange-600 rounded-3xl p-8 text-white shadow-lg">
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
             <div>
               <div className="flex items-center gap-3">
-                <file size={36} />
-                <h1 className="text-4xl font-bold">All Files</h1>
+                <Ticket size={36} />
+                <h1 className="text-4xl font-bold">Assigned Files</h1>
               </div>
               <p className="mt-3 text-orange-100 max-w-2xl">
-                Review every file stored in the database, track status, and
-                inspect the full request details.
+                Files currently assigned to you are shown here.
               </p>
             </div>
 
@@ -146,7 +76,7 @@ export default function AllFiles() {
               />
               <input
                 type="text"
-                placeholder="Search by file number, title, category, or requester"
+                placeholder="Search by file name, description, category, or uploader"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-orange-100 focus:outline-none focus:ring-2 focus:ring-white/70"
@@ -157,53 +87,49 @@ export default function AllFiles() {
 
         <div className="grid gap-4 md:grid-cols-3">
           <div className="bg-white rounded-2xl p-5 shadow">
-            <p className="text-slate-500">Open files</p>
-            <h2 className="text-3xl font-bold text-orange-500">
-              {files.length}
-            </h2>
+            <p className="text-slate-500">Open Files</p>
+            <h2 className="text-3xl font-bold text-orange-500">{files.length}</h2>
           </div>
 
           <div className="bg-white rounded-2xl p-5 shadow">
-            <p className="text-slate-500">Pending</p>
+            <p className="text-slate-500">In Progress</p>
             <h2 className="text-3xl font-bold text-blue-500">
-              {files.filter((f) => f.status === "PENDING").length}
+              {statusOptions.filter((status) => status === "In Progress").length}
             </h2>
           </div>
 
           <div className="bg-white rounded-2xl p-5 shadow">
             <p className="text-slate-500">Closed</p>
-            <h2 className="text-3xl font-bold text-green-500">
-              {files.filter((f) => f.status === "APPROVED").length}
-            </h2>
+            <h2 className="text-3xl font-bold text-green-500">closedCount</h2>
           </div>
         </div>
 
         {loading ? (
           <div className="bg-white rounded-3xl shadow p-12 text-center text-slate-500">
-            Loading files...
+            Loading assigned tickets...
           </div>
         ) : error ? (
           <div className="bg-white rounded-3xl shadow p-12 text-center">
             <AlertCircle className="mx-auto text-red-400" size={56} />
             <h2 className="mt-4 text-2xl font-bold text-slate-700">
-              Could not load files
+              Could not load assigned tickets
             </h2>
             <p className="mt-2 text-slate-500">{error}</p>
           </div>
-        ) : filteredfiles.length === 0 ? (
+        ) : files.length === 0 ? (
           <div className="bg-white rounded-3xl shadow p-16 text-center">
-            <file size={60} className="mx-auto text-orange-300" />
+            <Ticket size={60} className="mx-auto text-orange-300" />
             <h2 className="mt-4 text-2xl font-bold text-gray-700">
-              No files Found
+              No Assigned Tickets Found
             </h2>
             <p className="text-gray-500 mt-2">
               {search
                 ? "Try a different search term."
-                : "There are no files saved in the database yet."}
+                : "There are no tickets assigned to your account yet."}
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {files.map((file) => (
               <div
                 key={file.id}
@@ -212,10 +138,6 @@ export default function AllFiles() {
                 <div className="flex justify-between items-start gap-3">
                   <div>
                     <span className="font-bold text-orange-500">
-                      <span className="text-black text-sm font-thin ">
-                        {" "}
-                        id :
-                      </span>{" "}
                       {file.id}
                     </span>
                     <h2 className="text-lg font-semibold mt-3 text-gray-800 line-clamp-2">
@@ -224,9 +146,17 @@ export default function AllFiles() {
                   </div>
 
                   <span
-                    className={`text-xs px-3 py-1 rounded-full font-medium ${statusColor[file.status] || "bg-slate-100 text-slate-600"}`}
+                     className={`text-xs px-3 py-1 rounded-full  bg-slate-100 font-semibold ${
+                        file.status === "APPROVED"
+                          ? "text-green-600"
+                          : file.status === "PENDING"
+                            ? "text-yellow-500"
+                            : file.status === "REJECTED"
+                              ? "text-red-600"
+                              : "text-slate-500"
+                      }`} 
                   >
-                    {file.fileName}
+                    {file.status}
                   </span>
                 </div>
 
@@ -241,36 +171,29 @@ export default function AllFiles() {
 
                 <div className="mt-4 space-y-2 text-sm text-gray-600">
                   <div className="flex items-center gap-2">
-                    <Clock size={15} />
+                    <Clock  className="text-orange-500" size={15} />
                     {new Date(file.uploadedDate).toLocaleDateString()}
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <User size={15} />
-                    <span className="truncate">{file.uploadedBy?.name}</span>
+                    <User  className="text-orange-500" size={15} />
+                    <span className="truncate">{file.uploadedBy.name}</span>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <AlertCircle size={15} className="text-slate-400" />
-                    <span
-                      className={`font-semibold ${
-                        file.status === "APPROVED"
-                          ? "text-green-600"
-                          : file.status === "PENDING"
-                            ? "text-yellow-500"
-                            : file.status === "REJECTED"
-                              ? "text-red-600"
-                              : "text-slate-500"
-                      }`}
-                    >
-                      {file.status}
+                    <AtSign 
+                      size={15}
+                      className="text-orange-500"   
+                    />
+                    <span className="text-slate-500">
+                      {file.uploadedBy.email}
                     </span>
                   </div>
                 </div>
 
                 <button
                   onClick={() => setSelectedfile(file)}
-                  className="w-full mt-5 bg-orange-500 text-white py-2 rounded-xl hover:bg-orange-600 transition-colors cursor-pointer"
+                  className="w-full mt-5 bg-orange-500 text-white py-2 rounded-xl hover:bg-orange-600 transition-colors"
                 >
                   View Details
                 </button>
@@ -281,12 +204,12 @@ export default function AllFiles() {
 
         {selectedfile && (
           <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-3xl w-full max-w-2xl p-6 fixed z-0  max-h-[90vh] overflow-y-auto">
+            <div className="bg-white rounded-3xl w-full max-w-2xl p-6 relative max-h-[90vh] overflow-y-auto">
               <button
                 onClick={() => setSelectedfile(null)}
-                className="absolute  top-4 right-4  text-slate-500 hover:text-slate-800"
+                className="absolute top-4 right-4 text-slate-500 hover:text-slate-800"
               >
-                <X size={28} />
+                <X size={22} />
               </button>
 
               <div className="pr-8">
@@ -311,25 +234,24 @@ export default function AllFiles() {
                           : selectedfile.status === "REJECTED"
                             ? "text-red-600"
                             : "text-slate-500"
-                    }`}
-                  >
+                    }`}                  >
                     {selectedfile.status}
                   </p>
                 </div>
 
                 <div className="rounded-2xl bg-slate-50 p-4">
-                  <p className="text-sm text-slate-500">Priority</p>
+                  <p className="text-sm text-slate-500">Primary Email</p>
                   <p
-                    className={`mt-1 font-semibold ${priorityColor[selectedfile.priority] || "text-slate-700"}`}
+                    className="mt-1 font-semibold text-slate-700"
                   >
-                    {selectedfile.priority}
+                    {selectedfile.uploadedBy?.email}
                   </p>
                 </div>
 
                 <div className="rounded-2xl bg-slate-50 p-4">
                   <p className="text-sm text-slate-500">Requester</p>
                   <p className="mt-1 font-semibold text-slate-800">
-                    {selectedfile.uploadedBy?.name}
+                    {selectedfile.uploadedBy.name}
                   </p>
                 </div>
 
@@ -357,12 +279,14 @@ export default function AllFiles() {
                   </label>
 
                   <select
-                    value={selectedStatus}
-                    onChange={(e) => setSelectedStatus(e.target.value)}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3"
+                    value={
+                      statusDrafts[selectedfile.id] ?? selectedfile.status
+                    }
+                    // onChange={(e) =>
+                    //   handleStatusChange(selectedfile.id, e.target.value)
+                    // }
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-400"
                   >
-                    <option value="">Select Status</option>
-
                     {statusOptions.map((status) => (
                       <option key={status} value={status}>
                         {status}
@@ -371,32 +295,39 @@ export default function AllFiles() {
                   </select>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Assign Agent
-                  </label>
-
-                  <select
-                    value={selectedManager}
-                    onChange={(e) => setSelectedManager(e.target.value)}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3"
-                  >
-                    <option value="">Select Manager</option>
-
-                    {managers.map((manager) => (
-                      <option key={manager.id} value={manager.id}>
-                        {manager.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
                 <button
-                  onClick={handleUpdate}
-                  className="w-full bg-orange-500 text-white py-3 rounded-xl"
+                  type="button"
+                  // onClick={() => handleUpdateStatus(selectedfile)}
+                  //disabled={savingFileId === selectedfile.id}
+                  className="w-full bg-orange-500 text-white py-3 rounded-xl hover:bg-orange-600 transition-colors disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
                 >
                   Update
                 </button>
+
+                <div className="pt-4">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Add Comment
+                  </label>
+
+                  <textarea
+                    rows="4"
+                    value={commentText}
+                    onChange={(e) => setCommentText(e.target.value)}
+                    placeholder="Write a comment for the user..."
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none"
+                  />
+
+                  <button
+                    type="button"
+                    //onClick={handleAddComment}
+                    disabled={
+                      !commentText.trim() 
+                    }
+                    className="w-full mt-3 bg-slate-800 text-white py-3 rounded-xl hover:bg-slate-900 transition-colors disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+                  >
+                    Add Comment
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -404,4 +335,6 @@ export default function AllFiles() {
       </div>
     </UserLayout>
   );
-}
+};
+
+export default AssignedFiles;

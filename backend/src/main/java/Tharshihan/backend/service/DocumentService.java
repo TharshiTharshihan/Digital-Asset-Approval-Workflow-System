@@ -67,11 +67,16 @@ public class DocumentService {
         User manager = userRepo.findById(managerId)
                 .orElseThrow(() -> new RuntimeException("Manager not found" +managerId));
 
-        
+
         doc.setStatus(DocumentStatus.valueOf(status.toUpperCase()));
         doc.setAssignedManager(manager);
 
         return documentRepo.save(doc);
+
+    }
+
+    public List<Document> assignedDocuments(Long managerId) {
+        return documentRepo.findByAssignedManagerId(managerId);
 
     }
 }

@@ -1,10 +1,12 @@
 import UserLayout from "../layouts/UserLayout";
+import { useSelector } from "react-redux";
 
-const Profile = () => {
-  const user = JSON.parse(localStorage.getItem("user"));
-  const roleLabel = user?.role || "User";
-  const initial = (user?.name || "U").charAt(0).toUpperCase();
 
+function Profile  () {
+ 
+  const { currentUser } = useSelector((state) => state.user);
+
+  const initial = currentUser?.name ? currentUser.name.charAt(0).toUpperCase() : "-";
   return (
     <UserLayout>
       <div className="space-y-6">
@@ -19,7 +21,7 @@ const Profile = () => {
                 Account Profile
               </p>
               <h1 className="mt-2 text-3xl md:text-4xl font-bold">
-                {user?.name || "Guest User"}
+                {currentUser?.name || "Guest User"}
               </h1>
               <p className="mt-2 text-orange-100 max-w-2xl">
                 View your account details and role information in one clean,
@@ -31,7 +33,7 @@ const Profile = () => {
               <p className="text-xs uppercase tracking-[0.2em] text-orange-100">
                 Role
               </p>
-              <p className="mt-1 text-lg font-semibold">{roleLabel}</p>
+              <p className="mt-1 text-lg font-semibold">{currentUser?.role}</p>
             </div>
           </div>
         </div>
@@ -59,7 +61,7 @@ const Profile = () => {
                   Name
                 </label>
                 <input
-                  value={user?.name || "-"}
+                  value={currentUser?.name || "-"}
                   disabled
                   className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-slate-800 shadow-sm outline-none"
                 />
@@ -70,7 +72,7 @@ const Profile = () => {
                   Email
                 </label>
                 <input
-                  value={user?.email || "-"}
+                  value={currentUser?.email || "-"}
                   disabled
                   className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-slate-800 shadow-sm outline-none"
                 />
@@ -81,7 +83,7 @@ const Profile = () => {
                   Role
                 </label>
                 <input
-                  value={roleLabel}
+                  value={currentUser?.role || "-"}
                   disabled
                   className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-slate-800 shadow-sm outline-none"
                 />
@@ -103,14 +105,14 @@ const Profile = () => {
               <div className="rounded-2xl bg-white/5 border border-white/10 p-4">
                 <p className="text-sm text-slate-400">Display Name</p>
                 <p className="mt-1 font-semibold text-white">
-                  {user?.name || "-"}
+                  {currentUser?.name || "-"}
                 </p>
               </div>
 
               <div className="rounded-2xl bg-white/5 border border-white/10 p-4">
                 <p className="text-sm text-slate-400">Primary Email</p>
                 <p className="mt-1 font-semibold text-white break-all">
-                  {user?.email || "-"}
+                  {currentUser?.email || "-"}
                 </p>
               </div>
             </div>
@@ -121,4 +123,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+ export default Profile;

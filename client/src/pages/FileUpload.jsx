@@ -16,7 +16,7 @@ export default function FileUpload() {
     e.preventDefault();
 
     if (!title || !file) {
-      return toast.error("Please select title and file");
+      return toast.error("Please enter title and file");
     }
     console.log("currentUser Id is: ", currentUser.userId);
 

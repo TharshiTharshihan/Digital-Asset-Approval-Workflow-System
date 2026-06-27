@@ -24,7 +24,7 @@ public class DocumentController {
             @RequestParam Long userId,
             @RequestParam String title,
             @RequestParam MultipartFile file
-            )
+    )
             throws IOException {
 
         return ResponseEntity.ok(
@@ -49,7 +49,16 @@ public class DocumentController {
     }
 
 
-    // view single file
+    //get assigned files (Manager)
+    @GetMapping("/assigned-files/{managerId}")
+    public ResponseEntity<List<Document>>assignedDocuments(@PathVariable Long managerId){
+        List<Document> documents = documentService.assignedDocuments(managerId);
+        return ResponseEntity.ok(documents);
+    }
+
+
+
+// view single file
 //    @GetMapping("/file/{id}")
 //    public ResponseEntity<Document>getSingleDocument(@PathVariable Long id){
 //        Document document = documentService.getSingleDocument(id);
@@ -60,11 +69,11 @@ public class DocumentController {
 //            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 //    }
 
-    //update the document
+//update the document
     @PutMapping("/file/{id}")
     public ResponseEntity<String>updateDocument(@PathVariable Long id,
-                                                @RequestParam String status,
-                                                @RequestParam Long managerId){
+                                            @RequestParam String status,
+                                            @RequestParam Long managerId){
 
         Document updatedDocument = null;
 
@@ -81,5 +90,6 @@ public class DocumentController {
         }else
             return new ResponseEntity<>("Faile to update", HttpStatus.BAD_REQUEST);
 
-    }
+        }
+
 }

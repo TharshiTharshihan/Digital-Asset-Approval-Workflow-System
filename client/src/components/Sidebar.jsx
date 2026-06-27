@@ -54,7 +54,7 @@ const Sidebar = () => {
       >
         {/* Header */}
         <div className="p-6 border-b flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-green-500">Asset Hub</h1>
+          <h1 className="text-3xl font-bold font-serif text-orange-500">Asset Hub</h1>
 
           <button onClick={closeSidebar} className="sm:hidden">
             <X size={24} />
@@ -70,7 +70,7 @@ const Sidebar = () => {
               onClick={closeSidebar}
               className="flex items-center gap-3 p-3 rounded-xl hover:bg-orange-100"
             >
-              <LayoutDashboard />
+              <LayoutDashboard className="text-orange-500" />
               Dashboard
             </Link>
 
@@ -79,7 +79,7 @@ const Sidebar = () => {
               onClick={closeSidebar}
               className="flex items-center gap-3 p-3 rounded-xl hover:bg-orange-100"
             >
-              <PlusCircle />
+              <PlusCircle className="text-orange-500" />
               All Tickets
             </Link>
             <Link
@@ -87,7 +87,7 @@ const Sidebar = () => {
               onClick={closeSidebar}
               className="flex items-center gap-3 p-3 rounded-xl hover:bg-orange-100"
             >
-              <PlusCircle />
+              <PlusCircle className="text-orange-500"/>
               All Users
             </Link>
 
@@ -96,18 +96,18 @@ const Sidebar = () => {
               onClick={closeSidebar}
               className="flex items-center gap-3 p-3 rounded-xl hover:bg-orange-100"
             >
-              <User />
+              <User className="text-orange-500"/>
               Profile
             </Link>
           </nav>
         ) : currentUser?.role === "EMPLOYEE" ? (
-          <nav className="flex-1 p-4 space-y-3">
+          <nav className="flex-1 p-4 space-y-3 ">
             <Link
               to="/dashboard"
               onClick={closeSidebar}
               className="flex items-center gap-3 p-3 rounded-xl hover:bg-orange-100"
             >
-              <LayoutDashboard />
+              <LayoutDashboard className="text-orange-500"/>
               Dashboard
             </Link>
 
@@ -116,7 +116,7 @@ const Sidebar = () => {
               onClick={closeSidebar}
               className="flex items-center gap-3 p-3 rounded-xl hover:bg-orange-100"
             >
-              <PlusCircle />
+              <PlusCircle className="text-orange-500"/>
               Upload File
             </Link>
 
@@ -125,7 +125,7 @@ const Sidebar = () => {
               onClick={closeSidebar}
               className="flex items-center gap-3 p-3 rounded-xl hover:bg-orange-100"
             >
-              <Ticket />
+              <Ticket className="text-orange-500"/>
               My Documents
             </Link>
 
@@ -134,7 +134,7 @@ const Sidebar = () => {
               onClick={closeSidebar}
               className="flex items-center gap-3 p-3 rounded-xl hover:bg-orange-100"
             >
-              <User />
+              <User className="text-orange-500"/>
               Profile
             </Link>
           </nav>
@@ -145,7 +145,7 @@ const Sidebar = () => {
               onClick={closeSidebar}
               className="flex items-center gap-3 p-3 rounded-xl hover:bg-orange-100"
             >
-              <LayoutDashboard />
+              <LayoutDashboard className="text-orange-500"/>
               Dashboard
             </Link>
 
@@ -154,7 +154,7 @@ const Sidebar = () => {
               onClick={closeSidebar}
               className="flex items-center gap-3 p-3 rounded-xl hover:bg-orange-100"
             >
-              <Ticket />
+              <Ticket className="text-orange-500"/>
               Assigned Files
             </Link>
 
@@ -163,7 +163,7 @@ const Sidebar = () => {
               onClick={closeSidebar}
               className="flex items-center gap-3 p-3 rounded-xl hover:bg-orange-100"
             >
-              <User />
+              <User className="text-orange-500"/>
               Profile
             </Link>
           </nav>

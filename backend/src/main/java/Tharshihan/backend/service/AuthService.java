@@ -53,6 +53,7 @@ public class AuthService {
         return new LoginResponse(
                 user.getId(),
                 user.getName(),
+                user.getEmail(),
                 user.getRole().name(),
                 "Login Successful"
 

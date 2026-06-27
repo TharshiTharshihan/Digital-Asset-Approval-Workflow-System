@@ -14,6 +14,7 @@ import Dashboard from "./pages/Dashboard";
 import FileUpload from "./pages/FileUpload";
 import MyFiles from "./pages/MyFiles";
 import AllFiles from "./pages/AllFiles";
+import AssignedFiles from "./pages/AssignedFiles";
 import Profile from "./pages/Profile";
 import { ToastContainer } from "react-toastify";
 import "./App.css";
@@ -43,6 +44,7 @@ function App() {
           <Route path="/file-upload" element={<FileUpload />}></Route>
           <Route path="/my-files" element={<MyFiles />}></Route>
           <Route path="/all-files" element={<AllFiles />}></Route>
+          <Route path="/assigned-files" element={<AssignedFiles />}></Route>
           <Route path="/profile" element={<Profile />}></Route>
         </Routes>
       </BrowserRouter>

@@ -9,5 +9,6 @@ import java.util.List;
 public interface DocumentRepo extends JpaRepository<Document, Long> {
 
     List<Document> findByUploadedById(Long userId);
+    List<Document> findByAssignedManagerId(Long managerId);
 
 }

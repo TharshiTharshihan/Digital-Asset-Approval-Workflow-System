@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import UserLayout from "../layouts/UserLayout";
+import { FileText } from "lucide-react";
+
 
 function MyFiles() {
 
@@ -35,7 +37,7 @@ function MyFiles() {
     <>
     <UserLayout>
       <div className="max-w-2xl mx-auto mb-6">
-        <div className="flex bg-green-500 text-white text-center rounded-3xl p-6 shadow-lg">
+        <div className="flex bg-orange-500 text-white text-center rounded-3xl p-6 shadow-lg">
           <h1 className="text-2xl font-bold flex items-center  gap-2">
             My Uploaded Documents
           </h1>
@@ -69,11 +71,11 @@ function MyFiles() {
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
           <div>
             <div className="flex items-center gap-3">
-              <span className="text-4xl">📄</span>
+              <span className="text-4xl"><FileText className="text-orange-500" /></span>
               <h1 className="text-4xl font-bold">My Documents</h1>
             </div>
 
-            <p className="mt-3 text-green-600 max-w-2xl">
+            <p className="mt-3 text-orange-600 max-w-2xl">
               View and manage all uploaded digital assets.
             </p>
           </div>
@@ -82,7 +84,7 @@ function MyFiles() {
             <input
               type="text"
               placeholder="Search documents..."
-              className="w-full px-5 py-4 rounded-2xl bg-white/10 border border-black/20 text-black placeholder:text-orange-100 focus:outline-none focus:ring-2 focus:ring-white/70"
+              className="w-full px-5 py-4 rounded-2xl bg-gray-200 border border-black/20 text-black placeholder:text-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition"
             />
           </div>
         </div>
@@ -118,7 +120,7 @@ function MyFiles() {
               </span>
             </div>
 
-            <h2 className="mt-5 text-lg font-bold text-slate-800">
+            <h2 className="mt-5 text-lg font-semibold text-slate-800">
               {file.title}
             </h2>
 
